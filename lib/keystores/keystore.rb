@@ -53,6 +53,16 @@ module Keystores
 
     end
 
+    # Returns true if the entry identified by the given alias was created by a call to #set_certificate_entry
+    def is_certificate_entry(aliaz)
+
+    end
+
+    # Returns true if the entry identified by the given alias was created by a call to #set_key_entry
+    def is_key_entry(aliaz)
+
+    end
+
     # Loads this Keystore from the given path.
     def load(key_store_file, password)
 
