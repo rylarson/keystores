@@ -34,7 +34,7 @@ The certificate and key objects that these keystores return and expect are `Open
 Example usage:
 
 ```
-require 'keystores/java_keystore`
+require 'keystores/java_keystore'
 keystore = Keystores::JavaKeystore.new
 
 # Load can take any IO object, or a path to a file
