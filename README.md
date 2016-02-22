@@ -48,7 +48,7 @@ key = keystore.get_key('my_key', key_store_password)
 
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/keystores.
+Bug reports and pull requests are welcome on GitHub at https://github.com/rylarson/keystores.
 
 
 ## License
