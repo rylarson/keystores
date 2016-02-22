@@ -1,4 +1,6 @@
 require 'keystores/keystore'
+require 'keystores/jks/key_protector'
+require 'keystores/jks/encrypted_private_key_info'
 require 'thread'
 require 'openssl'
 
@@ -79,7 +81,8 @@ module Keystores
       end
 
       encrypted_private_key = entry.encrypted_private_key
-      OpenSSL::ASN1.decode(encrypted_private_key)
+      encrypted_private_key_info = Keystores::Jks::EncryptedPrivateKeyInfo.new(encrypted_private_key)
+      Keystores::Jks::KeyProtector.new(password).recover(encrypted_private_key_info)
     end
 
     def get_type

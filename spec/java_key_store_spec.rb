@@ -44,13 +44,13 @@ describe Keystores::JavaKeystore do
     expect(keystore.get_key('test_trusted_certificate_entry', 'keystores')).to be_nil
     expect(keystore.get_key('doesnt_exist', 'keystores')).to be_nil
     expect{keystore.get_key('test_private_key_entry', nil)}.to raise_error(IOError)
-    expect(keystore.get_key('test_private_key_entry', 'keystores'))
+    expect(keystore.get_key('test_private_key_entry', 'keystores')).to be_a(OpenSSL::PKey::DSA)
 
     keystore.delete_entry('test_trusted_certificate_entry')
     expect(keystore.size).to eq(1)
     expect(keystore.contains_alias('test_trusted_certificate_entry')).to be_falsey
     expect(keystore.contains_alias('test_private_key_entry')).to be_truthy
-    expect(keystore.aliases).to contain_exactly('test_private_key_entry').to_not be_nil
+    expect(keystore.aliases).to contain_exactly('test_private_key_entry')
 
     # Now when we ask for the alias given the certificate, we get the one back from private key entry
     expect(keystore.get_certificate_alias(expected_certificate)).to eq('test_private_key_entry')
