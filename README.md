@@ -43,8 +43,11 @@ keystore.load('/tmp/keystore.jks', key_store_password)
 
 certificate = keystore.get_certificate('my_certificate')
 key = keystore.get_key('my_key', key_store_password)
-```
 
+certificate.check_private_key(key)
+
+certificate_chain = keystore.get_certificate_chain('my_key')
+```
 
 ## Contributing
 
