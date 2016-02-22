@@ -1,8 +1,7 @@
 # Keystores
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/keystores`. To experiment with that code, run `bin/console` for an interactive prompt.
-
-TODO: Delete this and the text above, and describe your gem
+This gem provides ruby implementations of different key stores. This was primarily created to provide the ability
+to use many of the good Java key stores from ruby.
 
 ## Installation
 
@@ -22,13 +21,30 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+The API for this gem is modeled after the Java `KeyStore` class. All of the `KeyStore` implementations provided by this
+gem conform to the `Keystores::Keystore` interface.
 
-## Development
+The certificate and key objects that these keystores return and expect are `OpenSSL::X509::Certificate` and
+`OpenSSL::PKey` objects, respectively.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake rspec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
+### Supported Key Store types
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and tags, and push the `.gem` file to [rubygems.org](https://rubygems.org).
+#### Java Key Store (jks) format
+
+Example usage:
+
+```
+require 'keystores/java_keystore`
+keystore = Keystores::JavaKeystore.new
+
+# Load can take any IO object, or a path to a file
+key_store_password = 'keystores'
+keystore.load('/tmp/keystore.jks', key_store_password)
+
+certificate = keystore.get_certificate('my_certificate')
+key = keystore.get_key('my_key', key_store_password)
+```
+
 
 ## Contributing
 
