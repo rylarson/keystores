@@ -65,7 +65,11 @@ module Keystores
       end
 
       def protect(key)
+        if key.nil?
+          raise ArgumentError.new("plaintext key can't be null")
+        end
 
+        encoded = key.to_der
       end
 
       def recover(encrypted_private_key_info)

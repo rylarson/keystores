@@ -11,6 +11,12 @@ module Keystores
           to_open_ssl_p_key der_bytes
         end
 
+        def encode(key)
+          if key.is_a?(OpenSSL::PKey::DSA)
+            encode_dsa_key(key)
+          end
+        end
+
         private
 
         def to_open_ssl_p_key(der_bytes)
@@ -36,6 +42,19 @@ module Keystores
         def extract_key_type(der_bytes)
           asn1 = OpenSSL::ASN1.decode(der_bytes)
           asn1.value[1].value[0].value
+        end
+
+        def encode_dsa_key(dsa_key)
+          params = dsa_key.params
+          integer = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new('0'))
+          oid = OpenSSL::ASN1::ObjectId.new('DSA')
+          p = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['p']))
+          q = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['q']))
+          g = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['g']))
+          param_sequence = OpenSSL::ASN1::Sequence.new([p, q, g])
+          sequence = OpenSSL::ASN1::Sequence.new([oid, param_sequence])
+          octet_string = OpenSSL::ASN1::OctetString.new(OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['priv_key'])).to_der)
+          OpenSSL::ASN1::Sequence.new([integer, sequence, octet_string])
         end
       end
     end
