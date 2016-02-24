@@ -9,8 +9,11 @@ describe Keystores::JavaKeystore do
     keystore.load('test/test.jks', 'keystores')
 
     expect(keystore.get_type).to eq(Keystores::JavaKeystore::TYPE)
-    expect(keystore.size).to eq(2)
-    expected_aliases = ['test_private_key_entry', 'test_trusted_certificate_entry']
+    expect(keystore.size).to eq(4)
+    expected_aliases = ['test_private_key_entry',
+                        'test_trusted_certificate_entry',
+                        'test_rsa_private_key_entry',
+                        'test_ec_private_key_entry']
     expect(keystore.aliases).to contain_exactly(*expected_aliases)
 
     expected_aliases.each do |expected_alias|
@@ -44,14 +47,21 @@ describe Keystores::JavaKeystore do
 
     expect(keystore.get_key('test_trusted_certificate_entry', 'keystores')).to be_nil
     expect(keystore.get_key('doesnt_exist', 'keystores')).to be_nil
+
     expect { keystore.get_key('test_private_key_entry', nil) }.to raise_error(IOError)
     expect(keystore.get_key('test_private_key_entry', 'keystores')).to be_a(OpenSSL::PKey::DSA)
 
+    expect { keystore.get_key('test_rsa_private_key_entry', nil) }.to raise_error(IOError)
+    expect(keystore.get_key('test_rsa_private_key_entry', 'keystores')).to be_a(OpenSSL::PKey::RSA)
+
+    expect { keystore.get_key('test_ec_private_key_entry', nil) }.to raise_error(IOError)
+    expect(keystore.get_key('test_ec_private_key_entry', 'keystores')).to be_a(OpenSSL::PKey::EC)
+
     keystore.delete_entry('test_trusted_certificate_entry')
-    expect(keystore.size).to eq(1)
+    expect(keystore.size).to eq(3)
     expect(keystore.contains_alias('test_trusted_certificate_entry')).to be_falsey
     expect(keystore.contains_alias('test_private_key_entry')).to be_truthy
-    expect(keystore.aliases).to contain_exactly('test_private_key_entry')
+    expect(keystore.aliases).to contain_exactly('test_private_key_entry', 'test_rsa_private_key_entry', 'test_ec_private_key_entry')
 
     # Now when we ask for the alias given the certificate, we get the one back from private key entry
     expect(keystore.get_certificate_alias(expected_certificate)).to eq('test_private_key_entry')

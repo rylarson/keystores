@@ -134,7 +134,7 @@ module Keystores
             raise IOError.new('Cannot recover key')
           end
         end
-        Keystores::Jks::PKCS8Key.parse(plain_key.pack('c*'))
+        OpenSSL::PKey.pkcs8_parse(plain_key.pack('c*'))
       end
     end
   end
