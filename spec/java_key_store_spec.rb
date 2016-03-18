@@ -68,13 +68,12 @@ describe Keystores::JavaKeystore do
   end
 
   context 'writing a keystore' do
+    # TODO add integration tests to make sure that Java can actually read this
     it 'correctly writes a keystore that it read' do
       keystore = Keystores::JavaKeystore.new
       keystore.load('test/test.jks', 'keystores')
 
-      #TODO remove this when key writing works
-      keystore.delete_entry('test_private_key_entry')
-
+      java_generated_key = keystore.get_key('test_private_key_entry', 'keystores')
       java_generated_certificate = keystore.get_certificate('test_trusted_certificate_entry')
 
       stored = StringIO.new
@@ -87,6 +86,9 @@ describe Keystores::JavaKeystore do
 
       ruby_generated_certificate = keystore.get_certificate('test_trusted_certificate_entry')
       expect(ruby_generated_certificate.to_der).to (eq(java_generated_certificate.to_der))
+
+      ruby_generated_key = keystore.get_key('test_private_key_entry', 'keystores')
+      expect(ruby_generated_key.to_der).to (eq(java_generated_key.to_der))
     end
   end
 

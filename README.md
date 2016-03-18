@@ -31,6 +31,11 @@ The certificate and key objects that these keystores return and expect are `Open
 
 #### Java Key Store (jks) format
 
+##### Reading
+
+This gem supports reading trusted certificate entries and private key entries. It can read
+and decrypt RSA, DSA, and EC keys.
+
 Example usage:
 
 ```
@@ -48,6 +53,12 @@ certificate.check_private_key(key)
 
 certificate_chain = keystore.get_certificate_chain('my_key')
 ```
+
+##### Writing
+
+This gem supports writing trusted certificate entires and private key entries. It can only
+write DSA private keys for the time being, because I have not yet completed the PKCS8 encoding
+code for EC and RSA keys.
 
 ## Contributing
 
