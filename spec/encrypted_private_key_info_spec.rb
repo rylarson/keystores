@@ -1,0 +1,103 @@
+require 'base64'
+require 'keystores/jks/encrypted_private_key_info'
+require 'keystores/jks/key_protector'
+
+JAVA_ENCRYPTED_PRIVATE_KEY_INFO_DSA_DER = Base64.decode64('MIIBizAOBgorBgEEASoCEQEBBQAEggF3pAu6N6wKaUj3pJA5LAGKH6RlYfFskU8zpLMb1nCftWZ/
+OEvEBR4BLWZwFEaZmSdQnPYKVMNIvyxPD1BJ+tp/5UexxTsmC2uxHm+MOvfn6wAVrst7GAQcehoC
+wQIG22cykp0HnKzMbXSyuMhLbTZj1mEb9zm99TyqkwUgr9VzKtaMAKDR/UQXJyzKcpugwpKQAwaq
+22hEX8UKwlgXvasmPFbYkReKs9H54fPzlZH3x7GC3gsCuu15dAW6xzfTwGk2YgqrN9M+7sKy0gRX
+Ev1PMNyBg9bDkSM3jHIL5v9Cy9aSPkZJFiTWs+eW+WxFrEygiBVT4/Of/haK12/6TCeFPUxYx3KS
+AN//voZt8c441Y8K6COlw3nYC0ojF280E6fnObK6bZTQ695MAficLX+wQE5WVQg9WrUmEFMIdz8N
+QIDUcQyBcVH38ZTiPgEcrOvnzG7T2XKCUHDVkVopkwdKm+dr8C3bzMJYSnQRPPMUtsn6JFyHnsUk')
+
+JAVA_ENCRYPTED_DATA_DSA = Base64.decode64('pAu6N6wKaUj3pJA5LAGKH6RlYfFskU8zpLMb1nCftWZ/OEvEBR4BLWZwFEaZmSdQnPYKVMNIvyxP
+D1BJ+tp/5UexxTsmC2uxHm+MOvfn6wAVrst7GAQcehoCwQIG22cykp0HnKzMbXSyuMhLbTZj1mEb
+9zm99TyqkwUgr9VzKtaMAKDR/UQXJyzKcpugwpKQAwaq22hEX8UKwlgXvasmPFbYkReKs9H54fPz
+lZH3x7GC3gsCuu15dAW6xzfTwGk2YgqrN9M+7sKy0gRXEv1PMNyBg9bDkSM3jHIL5v9Cy9aSPkZJ
+FiTWs+eW+WxFrEygiBVT4/Of/haK12/6TCeFPUxYx3KSAN//voZt8c441Y8K6COlw3nYC0ojF280
+E6fnObK6bZTQ695MAficLX+wQE5WVQg9WrUmEFMIdz8NQIDUcQyBcVH38ZTiPgEcrOvnzG7T2XKC
+UHDVkVopkwdKm+dr8C3bzMJYSnQRPPMUtsn6JFyHnsUk')
+
+JAVA_ENCRYPTED_PRIVATE_KEY_INFO_RSA_DER = Base64.decode64('MIIE/DAOBgorBgEEASoCEQEBBQAEggToOZKpq3UiYW4eZMj8dxUM0HIZg2zXwXibuIf09s7cjw6S
+Mdlru0gE2dZLOnOacYKyhZIvrKk2AbbY+6NsdVMSqQLD4o9Ov4l/AgzDGJz/3HGXavoUkySA0rb2
+CzdTCcTx42uyseDGJA9DmHFTpiy2oRoCpppyjw0Cu7kazCrmkOFmbzPVQJgeRkYIbr7SS3e1H1b4
+1syEnp6vNZ2geTcVkmMnEL0RvLMVWG1psX1M3VQ78jgI3hEkHIdhaR6OvzGfyGteHhNPTY9nCAFu
+pSMXzt5t5Xx2qRKqCVbpCKDi+q6vBX0GGHFvhn+aPLQVIDBI6EWY1QXmZkZ161p4JLICKf/XT31g
+lX6TsyP2piTssMH7m65LhT4ulqAz9Cnu50x8wqNMLMPGeM1Crjw8pBwmSuVBsr56oDuhBbwhNfai
+RjtKZnu6MfXIKnhlNGx9T5gmF+8MWfjdfeaa/ViH3t2n8wySP86kW4cw0vL0qsEGOfhbqoPURUWN
+oy10GbaIee5YoPWZ+/Hj+W//BYfKuU3XDzPSxl/V0JWLsMUnHvGgGHXNqvPR6Z+Ot/82l0yxILhn
+kyZ0MLgaCcdhw2SGXMSVlT5loBVC/BvDwz6RIvxq0bYL64UdnpmH0JLKjzwa4CxL1/zJcAS0Ugor
+FDU8DWh62TjySW7r0JU52lMMkpok+SyMCwqsfPLC+gIqYZAUpZPOA1bUIn5iKNNLmAMW2v0Fpd4d
+IxE2KAr85gtflO3fjJtpxpR5LI2Rs1GyQtjHA/wp4sp6clabBA8eo3qwwnTh6+3T1WsWR6j5cxUG
+HrtgBB0QvhmCjlCxSQX5fS847krbm7en5ZD53OOJMq7bPGkm4Tc3x4Uh/NbQmV9IYHU2M/pWZHlW
+OpZUvuujrWycsKTzSSMk6y/aT0RPY41Xeafr/RLPDhdrVUZuNaWcgOXX3zW9uU9QtY4fhy/COZ/8
+TX1wFke4Ytcly91Cl7YUFTxBSQ2CWrnxmVuNaCF8zMxdo8VzyQ8BpcS0DD7eITf9F0l35azTLEjK
+4PA7de3Hcs8tSR7b5U2S2JZPirC5UeT7NYJubJ1hFRumIcY4GoQ9hi6cZqOQG0qP3JMqBZjCL0KA
+ZhvU7JWLoxH0QYzlCfWnvFIiPXo8bpABe1HR1rYzaAWweIUSCdXSN3mcZr4ihF98H/jfDLO7uQCZ
+Bga1cnkL0KBha27hV79AgN+7JsoivSyYyhUl6n3jquqmAIVs2EbkSYFRF0f62NFF8Lcd5aZayGNx
+lakIWNZc73tmS2EGwHGgbiRRHWqri2JKbcOTJKjTEWz81OJVC/pEgl//8dJvgWaXASZFA1nI9l0X
+6RmlIZWsh0dcLdujR/HQClBfECq6uyXVRJQIxPCy8dkAsMMgLfwrq9b23F76zLhGQKDUJt/UzeSN
+NQMOBARO/n+XMN9Rv0f5S0caKOkGriaChJrXMvgb5GQI5Ch7R23ucQOnLm4HU5KFl4kXM0kGyJzi
+d1Efie3s9dMX1xv5aCZZyecyOh8feLsEG0BCeZn85OIzZn3oNUsKmU49A0h93g3PFf176lOL2vJZ
+SCqVchohMFAMTK++VYYJe4ue1D3AWw/cw76yhPCkbjh51DP18EBB8gKdBAX5sHHvh4AmpOtIorGq
+9qHutIXuiZ4a6iHuNLsgDcZ9ZfBwc+8Phd0=')
+
+JAVA_ENCRYPTED_DATA_RSA = Base64.decode64('OZKpq3UiYW4eZMj8dxUM0HIZg2zXwXibuIf09s7cjw6SMdlru0gE2dZLOnOacYKyhZIvrKk2AbbY
++6NsdVMSqQLD4o9Ov4l/AgzDGJz/3HGXavoUkySA0rb2CzdTCcTx42uyseDGJA9DmHFTpiy2oRoC
+pppyjw0Cu7kazCrmkOFmbzPVQJgeRkYIbr7SS3e1H1b41syEnp6vNZ2geTcVkmMnEL0RvLMVWG1p
+sX1M3VQ78jgI3hEkHIdhaR6OvzGfyGteHhNPTY9nCAFupSMXzt5t5Xx2qRKqCVbpCKDi+q6vBX0G
+GHFvhn+aPLQVIDBI6EWY1QXmZkZ161p4JLICKf/XT31glX6TsyP2piTssMH7m65LhT4ulqAz9Cnu
+50x8wqNMLMPGeM1Crjw8pBwmSuVBsr56oDuhBbwhNfaiRjtKZnu6MfXIKnhlNGx9T5gmF+8MWfjd
+feaa/ViH3t2n8wySP86kW4cw0vL0qsEGOfhbqoPURUWNoy10GbaIee5YoPWZ+/Hj+W//BYfKuU3X
+DzPSxl/V0JWLsMUnHvGgGHXNqvPR6Z+Ot/82l0yxILhnkyZ0MLgaCcdhw2SGXMSVlT5loBVC/BvD
+wz6RIvxq0bYL64UdnpmH0JLKjzwa4CxL1/zJcAS0UgorFDU8DWh62TjySW7r0JU52lMMkpok+SyM
+CwqsfPLC+gIqYZAUpZPOA1bUIn5iKNNLmAMW2v0Fpd4dIxE2KAr85gtflO3fjJtpxpR5LI2Rs1Gy
+QtjHA/wp4sp6clabBA8eo3qwwnTh6+3T1WsWR6j5cxUGHrtgBB0QvhmCjlCxSQX5fS847krbm7en
+5ZD53OOJMq7bPGkm4Tc3x4Uh/NbQmV9IYHU2M/pWZHlWOpZUvuujrWycsKTzSSMk6y/aT0RPY41X
+eafr/RLPDhdrVUZuNaWcgOXX3zW9uU9QtY4fhy/COZ/8TX1wFke4Ytcly91Cl7YUFTxBSQ2CWrnx
+mVuNaCF8zMxdo8VzyQ8BpcS0DD7eITf9F0l35azTLEjK4PA7de3Hcs8tSR7b5U2S2JZPirC5UeT7
+NYJubJ1hFRumIcY4GoQ9hi6cZqOQG0qP3JMqBZjCL0KAZhvU7JWLoxH0QYzlCfWnvFIiPXo8bpAB
+e1HR1rYzaAWweIUSCdXSN3mcZr4ihF98H/jfDLO7uQCZBga1cnkL0KBha27hV79AgN+7JsoivSyY
+yhUl6n3jquqmAIVs2EbkSYFRF0f62NFF8Lcd5aZayGNxlakIWNZc73tmS2EGwHGgbiRRHWqri2JK
+bcOTJKjTEWz81OJVC/pEgl//8dJvgWaXASZFA1nI9l0X6RmlIZWsh0dcLdujR/HQClBfECq6uyXV
+RJQIxPCy8dkAsMMgLfwrq9b23F76zLhGQKDUJt/UzeSNNQMOBARO/n+XMN9Rv0f5S0caKOkGriaC
+hJrXMvgb5GQI5Ch7R23ucQOnLm4HU5KFl4kXM0kGyJzid1Efie3s9dMX1xv5aCZZyecyOh8feLsE
+G0BCeZn85OIzZn3oNUsKmU49A0h93g3PFf176lOL2vJZSCqVchohMFAMTK++VYYJe4ue1D3AWw/c
+w76yhPCkbjh51DP18EBB8gKdBAX5sHHvh4AmpOtIorGq9qHutIXuiZ4a6iHuNLsgDcZ9ZfBwc+8P
+hd0=')
+
+JAVA_ENCRYPTED_PRIVATE_KEY_INFO_EC_DER = Base64.decode64('MH0wDgYKKwYBBAEqAhEBAQUABGtE5oKP95zYfnvnaDqUUktlUMZaKKHciow2X5u3AIGk9LRddx+T
+5mJmnpscBXVZlnDJKdx8LxziSmoeePXcRQXVM8ECkULpteDb97lpJz3hUx/aW6MUnG/c5AQePAdy
+9b7YzuVQ5Wctz6i1cg==')
+
+JAVA_ENCRYPTED_DATA_EC = Base64.decode64('ROaCj/ec2H5752g6lFJLZVDGWiih3IqMNl+btwCBpPS0XXcfk+ZiZp6bHAV1WZZwySncfC8c4kpq
+Hnj13EUF1TPBApFC6bXg2/e5aSc94VMf2lujFJxv3OQEHjwHcvW+2M7lUOVnLc+otXI=')
+
+describe Keystores::Jks::EncryptedPrivateKeyInfo do
+
+  ['DSA', 'RSA', 'EC'].each do |key_type|
+
+    encrypted_private_key_info = const_get("JAVA_ENCRYPTED_PRIVATE_KEY_INFO_#{key_type}_DER")
+    encrypted_data = const_get("JAVA_ENCRYPTED_DATA_#{key_type}")
+
+    context 'correctly decodes' do
+      it "an encrypted #{key_type} private key" do
+        info = Keystores::Jks::EncryptedPrivateKeyInfo.new(:encoded => encrypted_private_key_info)
+        expect(info.algorithm).to eq(Keystores::Jks::KeyProtector::KEY_PROTECTOR_OID)
+        expect(info.encrypted_data).to eq(encrypted_data)
+        expect(info.encoded).to eq(encrypted_private_key_info)
+      end
+    end
+
+    context 'correctly encodes' do
+      it "an encrypted #{key_type} private key" do
+        info = Keystores::Jks::EncryptedPrivateKeyInfo.new(
+            :algorithm => Keystores::Jks::KeyProtector::KEY_PROTECTOR_OID,
+            :encrypted_data => encrypted_data)
+        expect(info.algorithm).to eq(Keystores::Jks::KeyProtector::KEY_PROTECTOR_OID)
+        expect(info.encrypted_data).to eq(encrypted_data)
+        expect(info.encoded).to eq(encrypted_private_key_info)
+      end
+    end
+  end
+end

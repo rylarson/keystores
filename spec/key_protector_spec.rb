@@ -38,8 +38,16 @@ g0BJ8PCPkv/xbRajLVtp4ykQjQvN7Kld/oSo+TeXdOryklu072XVku5XnAopkk6Hy2672GdBXITd
 Uk6Gk5/qNLDGk0Dwr6V6CesgQPDTT4/ITEV4rttXshI5mBOwFSqlU6HIftElCZVMx/euWLutmQLy
 DlYHS27dgut//JYucECPg7V7zz/oDtaD5TBmUnS+zofogLp4Xy3bzMJYSnQRPPMUtsn6JFyHnsUk'
 
+      ENCRYPTED_UNENCODED_KEY_BASE_64 = 'UM2oy9+ccSoT3YprrWqlJphYEZPXBze2NeiFWnHi9k+RfQU0l4CJBc42XtvpbFHFzA3ygkW6vOGj
+QQpwwd+LUMgsXrk5ffpfcrrbS20QApA7KwdbM1cthmOws0mf2o/cGPPcm6IhYhNID7k53vYWr0lj
+QmEvz4lI0QlCBubMtUlsja02qC2raHwvOcA8gqV1gByzNxQVy7cqg14JQ0w8G0yBT4AYYnxxoa/E
+HAvQp0MywETmJNoFtP+/foW/2PzjD0qAOyaZVBwrCUwGSf6rep83rpJ56yBs11Q/ULPlSK++UvlA
++8q/uDdqIBNPufwfdi99Zrs9L5qgG2UE8xxEGqdG9yO/i1qlY6iUGN/Lyqcg3f0Lv9ofSD4zYLO0
+BgK9MsmtqQ5b4aWsM6anoj41S8U/f/qg5AkJB3q8/P9TlUP09iQxwM90+Hsii9xyWOtN1TWkhmbu
+kDPL/Qi8BvmH9hLazS3bzMJYSnQRPPMUtsn6JFyHnsUk'
+
       it 'recover' do
-        encrypted_private_key_info = Keystores::Jks::EncryptedPrivateKeyInfo.new(Base64.decode64(ENCODED_DATA_BASE_64))
+        encrypted_private_key_info = Keystores::Jks::EncryptedPrivateKeyInfo.new(:encoded => Base64.decode64(ENCODED_DATA_BASE_64))
         protector = Keystores::Jks::KeyProtector.new('keystores')
         recovered = protector.recover(encrypted_private_key_info)
 
@@ -51,12 +59,16 @@ DlYHS27dgut//JYucECPg7V7zz/oDtaD5TBmUnS+zofogLp4Xy3bzMJYSnQRPPMUtsn6JFyHnsUk'
       end
 
       it 'protect' do
-        key = Keystores::Jks::PKCS8Key.parse(Base64.decode64(PLAIN_KEY_BASE_64))
-        expect(key).to be_a(OpenSSL::PKey::DSA)
+        # We can't KAT the protect method, since it generates a random salt
+        original = OpenSSL::PKey.pkcs8_parse(Base64.decode64(PLAIN_KEY_BASE_64))
+        expect(original).to be_a(OpenSSL::PKey::DSA)
         protector = Keystores::Jks::KeyProtector.new('keystores')
-        protected = protector.protect(key)
+        protected = protector.protect(original)
 
-        expect(protected).to eq(Base64.decode64(ENCRYPTED_KEY_BASE_64))
+        protector = Keystores::Jks::KeyProtector.new('keystores')
+        recovered = protector.recover(Keystores::Jks::EncryptedPrivateKeyInfo.new(:encoded => protected))
+
+        expect(recovered.to_der).to eq(original.to_der)
       end
     end
   end

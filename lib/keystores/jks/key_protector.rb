@@ -1,5 +1,7 @@
 require 'openssl'
+require 'securerandom'
 require 'keystores/jks/pkcs8_key'
+require 'keystores/jks/encrypted_private_key_info'
 
 # This is an implementation of a Sun proprietary, exportable algorithm
 # intended for use when protecting (or recovering the cleartext version of)
@@ -69,7 +71,53 @@ module Keystores
           raise ArgumentError.new("plaintext key can't be null")
         end
 
-        encoded = key.to_der
+        plain_key = key.to_pkcs8_der.unpack('c*')
+
+        # Determine the number of digest rounds
+        num_rounds = plain_key.length / DIGEST_LEN
+        num_rounds += 1 if (plain_key.length % DIGEST_LEN) != 0
+
+        salt = SecureRandom.random_bytes(SALT_LEN)
+        xor_key = Array.new(plain_key.length, 0)
+
+        xor_offset = 0
+        digest = salt
+
+        # Compute the digests, and store them in xor_key
+        for i in 1..num_rounds
+          @message_digest.update(@passwd_bytes.pack('c*'))
+          @message_digest.update(digest)
+          digest = @message_digest.digest
+          @message_digest.reset
+
+          if i < num_rounds
+            xor_key[xor_offset..(digest.length + xor_offset -1)] = digest.bytes
+          else
+            xor_key[xor_offset..-1] = digest[0..(xor_key.length - xor_offset - 1)].bytes
+          end
+          xor_offset += DIGEST_LEN
+        end
+
+        # XOR plain_key with xor_key, and store the result in tmpKey
+        tmp_key = []
+        for i in 0..(plain_key.length - 1)
+          tmp_key[i] = plain_key[i] ^ xor_key[i]
+        end
+
+        # Store salt and tmp_key in encr_key
+        encr_key = salt.unpack('c*') + tmp_key
+
+        # Append digest(password, plain_key) as an integrity check to encr_key
+        @message_digest << @passwd_bytes.pack('c*')
+        @passwd_bytes.fill(0)
+        @passwd_bytes = nil
+        @message_digest << plain_key.pack('c*')
+        digest = @message_digest.digest
+        @message_digest.reset
+
+        encr_key += digest.unpack('c*')
+        Keystores::Jks::EncryptedPrivateKeyInfo.new(:algorithm => KEY_PROTECTOR_OID,
+                                                    :encrypted_data => encr_key.pack('c*')).encoded
       end
 
       def recover(encrypted_private_key_info)

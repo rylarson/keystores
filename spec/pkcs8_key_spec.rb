@@ -15,7 +15,6 @@ gLRJFnEj6EwoFhO3zwkyjMim4TwWeotUfI0o4KOuHiuzpnWRbqN/C/ohNWLx+2J6ASQ7zKTxvqhR
 kImog9/hWuWfBpKLZl6Ae1UlZAFMO/7PSSoEFgIUb2aSH/GLWWT2EETZzPzImfyQsEo=')
 
       it 'encode and decode' do
-        # dsa_key = Keystores::Jks::PKCS8Key.parse(PLAIN_KEY_PKCS8_DER)
         dsa_key = OpenSSL::PKey::DSA.new(PLAIN_KEY_PKCS8_DER)
         pkcs8_encoded_dsa_key = dsa_key.to_pkcs8
         expect(pkcs8_encoded_dsa_key.to_der).to eq(PLAIN_KEY_PKCS8_DER)

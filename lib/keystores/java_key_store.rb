@@ -84,7 +84,7 @@ module Keystores
       end
 
       encrypted_private_key = entry.encrypted_private_key
-      encrypted_private_key_info = Keystores::Jks::EncryptedPrivateKeyInfo.new(encrypted_private_key)
+      encrypted_private_key_info = Keystores::Jks::EncryptedPrivateKeyInfo.new(:encoded => encrypted_private_key)
       Keystores::Jks::KeyProtector.new(password).recover(encrypted_private_key_info)
     end
 
