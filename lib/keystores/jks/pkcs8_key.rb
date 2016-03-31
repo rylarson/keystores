@@ -16,6 +16,29 @@ module OpenSSL
           init.(OpenSSL::PKey.der_to_pem(der_or_pem))
         end
       end
+
+      def to_pkcs8
+        integer = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new('0'))
+        oid = OpenSSL::ASN1::ObjectId.new('id-ecPublicKey')
+        curve_name = OpenSSL::ASN1::ObjectId.new(self.group.curve_name)
+        sequence = OpenSSL::ASN1::Sequence.new([oid, curve_name])
+
+        version = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new('1'))
+        priv_key = OpenSSL::ASN1::OctetString(private_key.to_s(2))
+
+        params_sequence = OpenSSL::ASN1::Sequence.new([version, priv_key])
+
+        octet_string = OpenSSL::ASN1::OctetString.new(params_sequence.to_der)
+        OpenSSL::ASN1::Sequence.new([integer, sequence, octet_string])
+      end
+
+      def to_pkcs8_der
+        to_pkcs8.to_der
+      end
+
+      def to_pkcs8_pem
+        to_pkcs8.to_pem
+      end
     end
 
     class RSA
@@ -30,6 +53,36 @@ module OpenSSL
           # to PEM and try again.
           init.(OpenSSL::PKey.der_to_pem(der_or_pem))
         end
+      end
+
+      def to_pkcs8
+        integer = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new('0'))
+        oid = OpenSSL::ASN1::ObjectId.new('rsaEncryption')
+        sequence = OpenSSL::ASN1::Sequence.new([oid, OpenSSL::ASN1::Null.new(nil)])
+
+        params = self.params
+        version = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new('0'))
+        n = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['n']))
+        e = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['e']))
+        d = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['d']))
+        p = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['p']))
+        q = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['q']))
+        dmp1 = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['dmp1']))
+        dmq1 = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['dmq1']))
+        iqmp = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new(params['iqmp']))
+
+        params_sequence = OpenSSL::ASN1::Sequence.new([version, n, e, d, p, q, dmp1, dmq1, iqmp])
+
+        octet_string = OpenSSL::ASN1::OctetString.new(params_sequence.to_der)
+        OpenSSL::ASN1::Sequence.new([integer, sequence, octet_string])
+      end
+
+      def to_pkcs8_der
+        to_pkcs8.to_der
+      end
+
+      def to_pkcs8_pem
+        to_pkcs8.to_pem
       end
     end
 
