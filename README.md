@@ -56,14 +56,12 @@ certificate_chain = keystore.get_certificate_chain('my_key')
 
 ##### Writing
 
-This gem supports writing trusted certificate entries and private key entries. It can only
-write DSA private keys for the time being, because I have not yet completed the PKCS8 encoding
-code for EC and RSA keys.
+This gem supports writing trusted certificate entries and private key entries. It currently supports
+writing DSA, RSA, and EC private key entries.
 
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/rylarson/keystores.
-
 
 ## License
 
