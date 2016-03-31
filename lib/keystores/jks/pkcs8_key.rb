@@ -22,13 +22,7 @@ module OpenSSL
         oid = OpenSSL::ASN1::ObjectId.new('id-ecPublicKey')
         curve_name = OpenSSL::ASN1::ObjectId.new(self.group.curve_name)
         sequence = OpenSSL::ASN1::Sequence.new([oid, curve_name])
-
-        version = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new('1'))
-        priv_key = OpenSSL::ASN1::OctetString(private_key.to_s(2))
-
-        params_sequence = OpenSSL::ASN1::Sequence.new([version, priv_key])
-
-        octet_string = OpenSSL::ASN1::OctetString.new(params_sequence.to_der)
+        octet_string = OpenSSL::ASN1::OctetString.new(encode_private_key.to_der)
         OpenSSL::ASN1::Sequence.new([integer, sequence, octet_string])
       end
 
@@ -38,6 +32,28 @@ module OpenSSL
 
       def to_pkcs8_pem
         to_pkcs8.to_pem
+      end
+
+      private
+
+      # ASN.1 syntax for EC private keys from SEC 1 v1.5 (draft):
+      #
+      # ECPrivateKey ::= SEQUENCE {
+      #   version INTEGER { ecPrivkeyVer1(1) } (ecPrivkeyVer1),
+      #   privateKey OCTET STRING,
+      #   parameters [0] ECDomainParameters {{ SECGCurveNames }} OPTIONAL,
+      #   publicKey [1] BIT STRING OPTIONAL
+      # }
+      #
+      # We currently ignore the optional parameters and publicKey fields.
+      # We encode the parameters are as part of the curve name,
+      # not in the private key structure.We do this because Java expects things
+      # to be encoded this way
+      def encode_private_key
+        version = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new('1'))
+        # The private key is stored as the twos complement binary representation
+        priv_key = OpenSSL::ASN1::OctetString(private_key.to_s(2))
+        OpenSSL::ASN1::Sequence.new([version, priv_key])
       end
     end
 
