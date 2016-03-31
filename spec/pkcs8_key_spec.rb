@@ -59,11 +59,6 @@ ws6f74wy2EZ4nCwQ9u+cKI8x7A==')
       PLAIN_EC_KEY_PKCS8_DER = Base64.decode64('MEECAQAwEwYHKoZIzj0CAQYIKoZIzj0DAQcEJzAlAgEBBCAIk25QlC2rUvXohshpJz0w59jVd8M9
 oGoeIut84zHLPQ==')
 
-      PLAIN_EC_KEY_OCTET_PARSED = 'CJNuUJQtq1L16IbIaSc9MOfY1XfDPaBqHiLrfOMxyz0='
-      PLAIN_EC_KEY_OCTET_JAVA = 'CJNuUJQtq1L16IbIaSc9MOfY1XfDPaBqHiLrfOMxyz0='
-      bytes = Base64.decode64(PLAIN_EC_KEY_OCTET_PARSED)
-      OpenSSL::BN.new(bytes, 2)
-
       it 'encode and decode' do
         ec_key = OpenSSL::PKey::EC.new(PLAIN_EC_KEY_PKCS8_DER)
         pkcs8_encoded_ec_key = ec_key.to_pkcs8
