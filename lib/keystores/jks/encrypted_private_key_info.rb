@@ -16,7 +16,7 @@ module Keystores
       # You can pass either an ASN.1 encryptedPrivateKeyInfo object
       # or the encrypted bytes and the encryption algorithm.
       #
-      # @param [Hash] opts the options to create a message with.
+      # @param [Hash] opts
       # @option opts [String] :encoded The ASN.1 encoded encrypted private key info
       # @option opts [String] :algorithm The encryption algorithm
       # @option opts [String] :encrypted_data The encrypted key bytes
