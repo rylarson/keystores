@@ -1,7 +1,8 @@
 # Keystores
 
 This gem provides ruby implementations of different key stores. This was primarily created to provide the ability
-to use many of the good Java key stores from ruby.
+to use many of the good Java key stores from ruby. This gem adds the key stores to the OpenSSL module structure,
+since that is where the `OpenSSL::PKCS12` keystore lives.
 
 ## Installation
 
@@ -41,8 +42,8 @@ and decrypt RSA, DSA, and EC keys.
 Example usage:
 
 ```
-require 'keystores/java_keystore'
-keystore = Keystores::JavaKeystore.new
+require 'keystores'
+keystore = OpenSSL::JKS.new
 
 # Load can take any IO object, or a path to a file
 key_store_password = 'keystores'

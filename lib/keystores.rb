@@ -1,5 +1,6 @@
-require "keystores/version"
+require 'keystores/java_key_store'
 
-module Keystores
-  # Your code goes here...
+module OpenSSL
+  # Alias the key store implementations in the OpenSSL module structure
+  class JKS < Keystores::JavaKeystore; end
 end

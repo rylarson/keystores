@@ -1,14 +1,14 @@
 require 'spec_helper'
-require 'keystores/java_key_store'
+require 'keystores'
 require 'openssl'
 require 'stringio'
 
-describe Keystores::JavaKeystore do
+describe OpenSSL::JKS do
   it 'can load a keystore containing a PrivateKeyEntry and a TrustedCertificateEntry' do
-    keystore = Keystores::JavaKeystore.new
+    keystore = OpenSSL::JKS.new
     keystore.load('test/test.jks', 'keystores')
 
-    expect(keystore.get_type).to eq(Keystores::JavaKeystore::TYPE)
+    expect(keystore.get_type).to eq(OpenSSL::JKS::TYPE)
     expect(keystore.size).to eq(4)
     expected_aliases = ['test_private_key_entry',
                         'test_trusted_certificate_entry',
@@ -70,7 +70,7 @@ describe Keystores::JavaKeystore do
   context 'writing a keystore' do
     # TODO add integration tests to make sure that Java can actually read this
     it 'correctly writes a keystore that it read' do
-      keystore = Keystores::JavaKeystore.new
+      keystore = OpenSSL::JKS.new
       keystore.load('test/test.jks', 'keystores')
 
       java_generated_key = keystore.get_key('test_private_key_entry', 'keystores')
@@ -81,7 +81,7 @@ describe Keystores::JavaKeystore do
       keystore.store(stored, 'keystores')
       stored.rewind
 
-      keystore = Keystores::JavaKeystore.new
+      keystore = OpenSSL::JKS.new
       keystore.load(stored, 'keystores')
 
       ruby_generated_certificate = keystore.get_certificate('test_trusted_certificate_entry')
@@ -94,23 +94,23 @@ describe Keystores::JavaKeystore do
 
   context 'with an invalid file format' do
     it 'raises an error if the password is incorrect' do
-      keystore = Keystores::JavaKeystore.new
+      keystore = OpenSSL::JKS.new
       expect {
         keystore.load('test/test.jks', 'keystores'.reverse)
       }.to raise_error(IOError, 'Keystore was tampered with, or password was incorrect')
     end
 
     it 'raises an error if the magic is incorrect' do
-      keystore = Keystores::JavaKeystore.new
+      keystore = OpenSSL::JKS.new
       expect {
         keystore.load(StringIO.new([0xdeefdeef].pack('N')), 'keystores')
       }.to raise_error(IOError, 'Invalid keystore format')
     end
 
     it 'raises an error if the magic is correct but the version is not' do
-      keystore = Keystores::JavaKeystore.new
+      keystore = OpenSSL::JKS.new
       expect {
-        keystore.load(StringIO.new([Keystores::JavaKeystore::MAGIC, 0x03].pack('N*')), 'keystores')
+        keystore.load(StringIO.new([OpenSSL::JKS::MAGIC, 0x03].pack('N*')), 'keystores')
       }.to raise_error(IOError, 'Invalid keystore format')
     end
   end
