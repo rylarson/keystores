@@ -7,4 +7,4 @@ RSpec::Core::RakeTask.new(:spec)
 task :default => :spec
 
 #This gives us build, install, and release
-Gem::Tasks.new(:console => false, :sign => false
+Gem::Tasks.new(:console => false, :sign => false)
