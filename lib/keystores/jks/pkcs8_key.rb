@@ -47,7 +47,7 @@ module OpenSSL
       #
       # We currently ignore the optional parameters and publicKey fields.
       # We encode the parameters are as part of the curve name,
-      # not in the private key structure.We do this because Java expects things
+      # not in the private key structure. We do this because Java expects things
       # to be encoded this way
       def encode_private_key
         version = OpenSSL::ASN1::Integer.new(OpenSSL::BN.new('1'))
@@ -141,7 +141,6 @@ module OpenSSL
     # Parse the correct type of OpenSSL::PKey from a der encoded PKCS8 private key
     def self.pkcs8_parse(der_bytes)
       key_type = extract_key_type(der_bytes)
-      # pem = der_to_pem(der_bytes)
       OpenSSL::PKey.const_get(key_type).new(der_bytes)
     end
 

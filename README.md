@@ -31,6 +31,8 @@ The certificate and key objects that these keystores return and expect are `Open
 
 #### Java Key Store (jks) format
 
+[Detailed documentation](JAVA_KEY_STORE_README.md)
+
 ##### Reading
 
 This gem supports reading trusted certificate entries and private key entries. It can read

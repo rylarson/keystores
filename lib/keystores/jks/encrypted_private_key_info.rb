@@ -13,6 +13,13 @@ module Keystores
     class EncryptedPrivateKeyInfo
       attr_accessor :encrypted_data, :algorithm, :encoded
 
+      # You can pass either an ASN.1 encryptedPrivateKeyInfo object
+      # or the encrypted bytes and the encryption algorithm.
+      #
+      # @param [Hash] opts the options to create a message with.
+      # @option opts [String] :encoded The ASN.1 encoded encrypted private key info
+      # @option opts [String] :algorithm The encryption algorithm
+      # @option opts [String] :encrypted_data The encrypted key bytes
       def initialize(opts = {})
         # Parses from encoded private key
         if opts.has_key?(:encoded)
