@@ -48,7 +48,8 @@ require 'keystores/jks/encrypted_private_key_info'
 # Then concatenate the password with the recovered key, and compare with the
 # last length(digest(p, P)) bytes of R. If they match, the recovered key is
 # indeed the same key as the original key.
-
+#
+# TODO, implement this as an OpenSSL PBE Cipher
 module Keystores
   module Jks
     class KeyProtector
