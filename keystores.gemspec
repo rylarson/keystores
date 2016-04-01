@@ -9,8 +9,9 @@ Gem::Specification.new do |spec|
   spec.authors       = ['Ryan Larson']
   spec.email         = ['ryan.mango.larson@gmail.com']
 
-  spec.summary       = 'This gem allows applications to interact with different types of keystores'
-  spec.description   = spec.summary
+  spec.summary       = 'This gem allows applications to interact with java key stores'
+  spec.description   = 'This gem allows you to interact with java key stores in pure ruby. Keys and Certificates are' +
+                       ' represented as OpenSSL objects'
   spec.homepage      = 'https://github.com/rylarson/keystores'
   spec.license       = 'MIT'
 
