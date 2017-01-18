@@ -178,7 +178,20 @@ module Keystores
     end
 
     def set_key_entry(aliaz, key, certificate_chain, password=nil)
-      super
+      @entries_mutex.synchronize do
+        entry = @entries[aliaz]
+        if !entry.nil? && entry.is_a?(TrustedCertificateEntry)
+          raise ArgumentError.new('Cannot overwrite own key')
+        end
+
+        entry = KeyEntry.new
+        # Java uses new Date().getTime() which returns milliseconds since epoch, so we do the same here with %Q
+        entry.creation_date = DateTime.now.strftime('%Q').to_i
+        entry.encrypted_private_key = Keystores::Jks::KeyProtector.new(password).protect(key)
+        entry.certificate_chain = certificate_chain
+
+        @entries[aliaz] = entry
+      end
     end
 
     def size
@@ -194,7 +207,7 @@ module Keystores
 
         md = get_pre_keyed_hash(password)
 
-        io = key_store_file.respond_to?(:write) ? key_store_file : File.open(key_store_file, 'w')
+        io = key_store_file.respond_to?(:write) ? key_store_file : File.open(key_store_file, 'wb')
 
         write_int(io, MAGIC, md)
         # Always write the latest version

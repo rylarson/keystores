@@ -67,6 +67,20 @@ describe OpenSSL::JKS do
     expect(keystore.get_certificate_alias(expected_certificate)).to eq('test_private_key_entry')
   end
 
+  it 'can create a keystore by setting a PrivateKeyEntry' do
+    key = OpenSSL::PKey::RSA.generate(1024)
+    certificate_chain = OpenSSL::X509::Certificate.new(IO.binread('test/trusted_certificate_jks.crt'))
+
+    keystore = OpenSSL::JKS.new
+    keystore.set_key_entry('test_rsa_private_key_entry', key, certificate_chain, 'keystores')
+
+    expect(keystore.size).to eq(1)
+    expect(keystore.contains_alias('test_rsa_private_key_entry')).to be_truthy
+
+    expect { keystore.get_key('test_rsa_private_key_entry', nil) }.to raise_error(IOError)
+    expect(keystore.get_key('test_rsa_private_key_entry', 'keystores')).to be_a(OpenSSL::PKey::RSA)
+  end
+
   context 'writing a keystore' do
     # TODO add integration tests to make sure that Java can actually read this
     it 'correctly writes a keystore that it read' do
