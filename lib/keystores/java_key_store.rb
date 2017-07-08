@@ -177,7 +177,7 @@ module Keystores
       end
     end
 
-    def set_key_entry(aliaz, key, certificate_chain, password=nil)
+    def set_key_entry(aliaz, key, certificate_chain, password)
       @entries_mutex.synchronize do
         entry = @entries[aliaz]
         if !entry.nil? && entry.is_a?(TrustedCertificateEntry)
@@ -188,7 +188,7 @@ module Keystores
         # Java uses new Date().getTime() which returns milliseconds since epoch, so we do the same here with %Q
         entry.creation_date = DateTime.now.strftime('%Q').to_i
         entry.encrypted_private_key = Keystores::Jks::KeyProtector.new(password).protect(key)
-        entry.certificate_chain = certificate_chain
+        entry.certificate_chain = [certificate_chain].flatten
 
         @entries[aliaz] = entry
       end
