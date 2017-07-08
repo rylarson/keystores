@@ -79,6 +79,20 @@ describe OpenSSL::JKS do
 
     expect { keystore.get_key('test_rsa_private_key_entry', nil) }.to raise_error(IOError)
     expect(keystore.get_key('test_rsa_private_key_entry', 'keystores')).to be_a(OpenSSL::PKey::RSA)
+
+    # ensure that the created keystore can then be stored and re-read
+    stored = StringIO.new
+    stored.set_encoding('BINARY', 'BINARY')
+    expect { keystore.store(stored, 'keystores') }.not_to raise_error
+    stored.rewind
+
+    reloaded_store = OpenSSL::JKS.new
+    reloaded_store.load(stored, 'keystores')
+
+    expect(reloaded_store.size).to eq(keystore.size)
+    expect(reloaded_store.contains_alias('test_rsa_private_key_entry')).to be_truthy
+    expect(reloaded_store.get_key('test_rsa_private_key_entry', 'keystores').to_der).to \
+      eq(keystore.get_key('test_rsa_private_key_entry', 'keystores').to_der)
   end
 
   context 'writing a keystore' do

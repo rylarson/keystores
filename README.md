@@ -62,6 +62,23 @@ certificate_chain = keystore.get_certificate_chain('my_key')
 This gem supports writing trusted certificate entries and private key entries. It currently supports
 writing DSA, RSA, and EC private key entries.
 
+Example usage:
+
+```
+require 'keystores'
+keystore = OpenSSL::JKS.new
+
+
+key = OpenSSL::PKey::RSA.new(File.read('my_key.pem'))
+cert_chain = OpenSSL::X509::Certificate.new(File.read('my_cert.pem'))
+private_key_password = 'key_password'
+
+keystore.set_key_entry('my-key', key, cert_chain, private_key_password)
+
+key_store_password = 'keystores'
+keystore.store('my_keystore.jks', key_store_password)
+```
+
 ## Contributing
 
 Bug reports and pull requests are welcome on GitHub at https://github.com/rylarson/keystores.
