@@ -6,14 +6,18 @@ module OpenSSL
     class EC
       original_initialize = instance_method(:initialize)
 
-      define_method(:initialize) do |der_or_pem|
+      define_method(:initialize) do |*several_variants|
         init = original_initialize.bind(self)
         begin
-          init.(der_or_pem)
+          init.(*several_variants)
         rescue Exception
           # If we blow up trying to parse the key, we might be der encoded PKCS8, and if we are, convert ourselves
           # to PEM and try again.
-          init.(OpenSSL::PKey.der_to_pem(der_or_pem))
+          if several_variants.count == 1
+            init.(OpenSSL::PKey.der_to_pem(*several_variants))
+          else
+            raise
+          end
         end
       end
 
@@ -60,14 +64,18 @@ module OpenSSL
     class RSA
       original_initialize = instance_method(:initialize)
 
-      define_method(:initialize) do |der_or_pem|
+      define_method(:initialize) do |*several_variants|
         init = original_initialize.bind(self)
         begin
-          init.(der_or_pem)
+          init.(*several_variants)
         rescue Exception
           # If we blow up trying to parse the key, we might be der encoded PKCS8, and if we are, convert ourselves
           # to PEM and try again.
-          init.(OpenSSL::PKey.der_to_pem(der_or_pem))
+          if several_variants.count == 1
+            init.(OpenSSL::PKey.der_to_pem(*several_variants))
+          else
+            raise
+          end
         end
       end
 
@@ -105,14 +113,18 @@ module OpenSSL
     class DSA
       original_initialize = instance_method(:initialize)
 
-      define_method(:initialize) do |der_or_pem|
+      define_method(:initialize) do |*several_variants|
         init = original_initialize.bind(self)
         begin
-          init.(der_or_pem)
+          init.(*several_variants)
         rescue Exception
           # If we blow up trying to parse the key, we might be der encoded PKCS8, and if we are, convert ourselves
           # to PEM and try again.
-          init.(OpenSSL::PKey.der_to_pem(der_or_pem))
+          if several_variants.count == 1
+            init.(OpenSSL::PKey.der_to_pem(*several_variants))
+          else
+            raise
+          end
         end
       end
 
